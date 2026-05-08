@@ -55,3 +55,18 @@ message PLE {
     // task tower
     repeated TaskTower task_towers = 2;
 }
+
+message CustomPLE {
+    // expert MLP config (shared by all experts)
+    required MLP expert_mlp = 1;
+    // gate MLP config (optional)
+    optional MLP gate_mlp = 2;
+    // number of shared experts
+    required uint32 num_shared_expert = 3 [default=1];
+    // number of task-specific experts per task
+    required uint32 num_specific_expert = 4 [default=1];
+    // number of extraction layers
+    optional uint32 num_level = 5 [default=1];
+    // task tower
+    repeated TaskTower task_towers = 6;
+}
