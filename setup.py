@@ -65,7 +65,7 @@ def parse_requirements(fname="requirements.txt"):
 
 
 setup(
-    name="tzrec_allsaints",
+    name="tzrec_allsaints_custom_rank_model",
     version=get_version(),
     description="An easy-to-use framework for Recommendation",
     long_description=readme(),
