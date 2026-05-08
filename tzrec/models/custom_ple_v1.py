@@ -17,15 +17,15 @@ from torch import nn
 from tzrec.datasets.utils import Batch
 from tzrec.features.feature import BaseFeature
 from tzrec.models.multi_task_rank import MultiTaskRank
-from tzrec.modules.extraction_net import ExtractionNet
+from tzrec.modules.ple import PLE as PLEModule
 from tzrec.modules.task_tower import TaskTower
 from tzrec.protos.model_pb2 import ModelConfig
 from tzrec.protos.models import multi_task_rank_pb2
 from tzrec.utils.config_util import config_to_kwargs
 
 
-class CustomPLE(MultiTaskRank):
-    """Progressive Layered Extraction model.
+class CustomPLEV1(MultiTaskRank):
+    """Progressive Layered Extraction model backed by modules/ple.py.
 
     Args:
         model_config (ModelConfig): an instance of ModelConfig.
@@ -43,45 +43,34 @@ class CustomPLE(MultiTaskRank):
         **kwargs: Any,
     ) -> None:
         super().__init__(model_config, features, labels, sample_weights, **kwargs)
-        assert model_config.WhichOneof("model") == "custom_ple", (
+        assert model_config.WhichOneof("model") == "custom_ple_v1", (
             "invalid model config: %s" % self._model_config.WhichOneof("model")
         )
-        assert isinstance(self._model_config, multi_task_rank_pb2.CustomPLE)
-
-        self._task_nums = len(self._model_config.task_towers)
-        self._layer_nums = len(self._model_config.extraction_networks)
+        assert isinstance(self._model_config, multi_task_rank_pb2.CustomPLEV1)
 
         self.init_input()
         self.group_name = self.embedding_group.group_names()[0]
         feature_in = self.embedding_group.group_total_dim(self.group_name)
 
-        self._extraction_nets = nn.ModuleList()
-        in_extraction_networks = [feature_in] * self._task_nums
-        in_shared_expert = feature_in
-        for i, extraction_network_cfg in enumerate(
-            self._model_config.extraction_networks
-        ):
-            if i == self._layer_nums - 1:
-                final_flag = True
-            else:
-                final_flag = False
-            extraction_network_cfg = config_to_kwargs(extraction_network_cfg)
-            extraction = ExtractionNet(
-                in_extraction_networks,
-                in_shared_expert,
-                final_flag=final_flag,
-                **extraction_network_cfg,
-            )
-            self._extraction_nets.append(extraction)
-            output_dims = extraction.output_dim()
-            in_extraction_networks = output_dims[:-1]
-            in_shared_expert = output_dims[-1]
+        self.ple = PLEModule(
+            in_features=feature_in,
+            expert_mlp=config_to_kwargs(self._model_config.expert_mlp),
+            num_shared_expert=self._model_config.num_shared_expert,
+            num_specific_expert=self._model_config.num_specific_expert,
+            num_task=len(self._task_tower_cfgs),
+            num_level=self._model_config.num_level,
+            gate_mlp=config_to_kwargs(self._model_config.gate_mlp)
+            if self._model_config.HasField("gate_mlp")
+            else None,
+        )
+
+        tower_feature_in = self.ple.output_dim()
         self._task_tower = nn.ModuleList()
-        for i, tower_cfg in enumerate(self._task_tower_cfgs):
-            tower_cfg = config_to_kwargs(tower_cfg)
+        for task_tower_cfg in self._task_tower_cfgs:
+            tower_cfg = config_to_kwargs(task_tower_cfg)
             mlp = tower_cfg["mlp"] if "mlp" in tower_cfg else None
             self._task_tower.append(
-                TaskTower(in_extraction_networks[i], tower_cfg["num_class"], mlp=mlp)
+                TaskTower(tower_feature_in, tower_cfg["num_class"], mlp=mlp)
             )
 
     def predict(self, batch: Batch) -> Dict[str, torch.Tensor]:
@@ -94,16 +83,12 @@ class CustomPLE(MultiTaskRank):
             predictions (dict): a dict of predicted result.
         """
         grouped_features = self.build_input(batch)
-        net = grouped_features[self.group_name]
-        extraction_network_fea = [net] * self._task_nums
-        shared_expert_fea = net
-        for extraction_net in self._extraction_nets:
-            extraction_network_fea, shared_expert_fea = extraction_net(
-                extraction_network_fea, shared_expert_fea
-            )
+        task_input_list = self.ple(grouped_features[self.group_name])
+
         tower_outputs = {}
         for i, task_tower_cfg in enumerate(self._task_tower_cfgs):
             tower_name = task_tower_cfg.tower_name
-            tower_output = self._task_tower[i](extraction_network_fea[i])
+            tower_output = self._task_tower[i](task_input_list[i])
             tower_outputs[tower_name] = tower_output
+
         return self._multi_task_output_to_prediction(tower_outputs)

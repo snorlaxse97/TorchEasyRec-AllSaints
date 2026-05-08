@@ -57,6 +57,13 @@ message PLE {
 }
 
 message CustomPLE {
+    // extraction network
+    repeated ExtractionNetwork extraction_networks = 1;
+    // task tower
+    repeated TaskTower task_towers = 2;
+}
+
+message CustomPLEV1 {
     // expert MLP config (shared by all experts)
     required MLP expert_mlp = 1;
     // gate MLP config (optional)

@@ -53,6 +53,7 @@ message ModelConfig {
         PLE ple = 203;
         DC2VR dc2vr = 204;
         CustomPLE custom_ple = 205;
+        CustomPLEV1 custom_ple_v1 = 206;
 
         DSSM dssm = 301;
         DSSMV2 dssm_v2 = 302;
