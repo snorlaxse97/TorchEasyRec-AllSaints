@@ -1,0 +1,12 @@
+{
+    "auc_is_full": 0.8422901034355164,
+    "grouped_auc_is_full": 0.5317229628562927,
+    "binary_cross_entropy_is_full": 0.42577996850013733,
+    "auc_is_valid": 0.8489332795143127,
+    "grouped_auc_is_valid": 0.5355528593063354,
+    "binary_cross_entropy_is_valid": 0.29356926679611206,
+    "multiclass_auc_play_duration": 0.9285804033279419,
+    "softmax_cross_entropy_play_duration": 1.2655786275863647
+}
+
+# https://pai.console.aliyun.com/?regionId=cn-shenzhen&workspaceId=175614#/dlc/jobs/dlc1rfpv62zxs0nz/log

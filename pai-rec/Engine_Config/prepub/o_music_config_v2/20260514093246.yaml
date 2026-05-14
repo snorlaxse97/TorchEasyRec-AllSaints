@@ -1,0 +1,3223 @@
+{
+    "ListenConf": {
+        "HttpAddr": "",
+        "HttpPort": 8000
+    },
+    "SortConfs": [
+        {
+            "Name": "vipSingerDiversitySort",
+            "SortType": "DiversityRuleSort",
+            "DiversityRules": [
+                {
+                    "Dimensions": [
+                        "singer_id"
+                    ],
+                    "IntervalSize": 8,
+                    "WindowSize": 100,
+                    "FrequencySize": 5
+                }
+            ],
+            "MultiValueDimensionConf": [
+                {
+                    "DimensionName": "singer_id",
+                    "Delimiter": ","
+                }
+            ]
+        },
+        {
+            "Name": "DiversityRuleSortMulti",
+            "SortType": "DiversityRuleSort",
+            "DiversityRules": [
+                {
+                    "Dimensions": [
+                        "singer_id"
+                    ],
+                    "IntervalSize": 8,
+                    "WindowSize": 12,
+                    "FrequencySize": 1
+                }
+            ],
+            "MultiValueDimensionConf": [
+                {
+                    "DimensionName": "singer_id",
+                    "Delimiter": ","
+                }
+            ]
+        },
+        {
+            "Name": "GlobalHotV3DowngradeSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "global_hot_v3",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.5"
+                }
+            ]
+        },
+        {
+            "Name": "GlobalHotFPDowngradeSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "global_hot_full_play",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.1"
+                }
+            ]
+        },
+        {
+            "Name": "ModelRerankWeight",
+            "SortType": "BoostScoreByWeight",
+            "TimeInterval": 172800,
+            "BoostScoreByWeightDao": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.mmd_reweight_rank_v1",
+                "ItemFieldName": "item_id",
+                "WeightFieldName": "weight"
+            }
+        },
+        {
+            "Name": "realtimeDowngradeSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "realtimeu2i",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 1.5"
+                }
+            ]
+        },
+        {
+            "Name": "plGlobalHotDowngradeSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "pl_global_hot",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.7"
+                }
+            ]
+        },
+        {
+            "Name": "specialSongSort",
+            "SortType": "BoostScoreSort",
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "item_id",
+                            "Domain": "item",
+                            "Type": "int",
+                            "Value": [
+                                8498,
+                                509476,
+                                73841808,
+                                8514,
+                                46482781,
+                                67215838,
+                                43551244,
+                                57021526,
+                                44726008,
+                                63052308,
+                                45820361,
+                                40750317,
+                                8450,
+                                10488,
+                                41381547,
+                                538314,
+                                1033412,
+                                47594340,
+                                55566565,
+                                59729245,
+                                67345571,
+                                731814,
+                                71304716,
+                                67215537,
+                                40338866,
+                                9275,
+                                44254286,
+                                509466,
+                                46095986,
+                                44107719,
+                                54368746,
+                                52219909,
+                                40968445,
+                                44936647,
+                                69715934,
+                                30154,
+                                40892655,
+                                60201610,
+                                43252683,
+                                45260991,
+                                7909,
+                                10296,
+                                7864709,
+                                42998956,
+                                509461,
+                                67300151,
+                                902609,
+                                44261688,
+                                45304573,
+                                70939462
+                            ],
+                            "Operator": "in"
+                        }
+                    ],
+                    "Expression": "score * 0.5"
+                }
+            ]
+        },
+        {
+            "Name": "specialCpSort",
+            "SortType": "BoostScoreSort",
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "item_id",
+                            "Domain": "item",
+                            "Type": "int",
+                            "Value": 1,
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.5"
+                }
+            ]
+        },
+        {
+            "Name": "specialSonglistSort",
+            "SortType": "BoostScoreSort",
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "keywords",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": [
+                                "emo",
+                                "周杰伦",
+                                "热门",
+                                "指南",
+                                "熊出没",
+                                "刀郎",
+                                "ktv",
+                                "华语",
+                                "粤语",
+                                "热歌",
+                                "热门"
+                            ],
+                            "Operator": "in"
+                        }
+                    ],
+                    "Expression": "score * 0.6"
+                }
+            ]
+        },
+        {
+            "Name": "plHisSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "pl_history",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 1.3"
+                }
+            ]
+        },
+        {
+            "Name": "plSwingPlaySort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "swing_play",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 1.3"
+                }
+            ]
+        },
+        {
+            "Name": "plFullPlaySort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "song_full_play",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.8"
+                }
+            ]
+        },
+        {
+            "Name": "plSingerSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "pl_singer",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.85"
+                }
+            ]
+        },
+        {
+            "Name": "plHotRtSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "pl_hour_hot",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.85"
+                }
+            ]
+        },
+        {
+            "Name": "psUserGroupSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "user_group_hot",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 1.2"
+                }
+            ]
+        },
+        {
+            "Name": "psSwingClickSort",
+            "SortType": "BoostScoreSort",
+            "Debug": false,
+            "BoostScoreConditions": [
+                {
+                    "Conditions": [
+                        {
+                            "Name": "recall_name",
+                            "Domain": "item",
+                            "Type": "string",
+                            "Value": "swing_click",
+                            "Operator": "equal"
+                        }
+                    ],
+                    "Expression": "score * 0.9"
+                }
+            ]
+        }
+    ],
+    "SortNames": {
+        "default": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "generalSong": [
+            "GlobalHotV3DowngradeSort",
+            "GlobalHotFPDowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti",
+            "psUserGroupSort"
+        ],
+        "musicModelDefault": [
+            "GlobalHotV3DowngradeSort",
+            "GlobalHotFPDowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti",
+            "psUserGroupSort"
+        ],
+        "musicModelNew": [
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "musicModelAttuned": [
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "recommendPlaylist": [
+            "plGlobalHotDowngradeSort",
+            "plHotRtSort",
+            "plHisSort",
+            "psSwingClickSort",
+            "plSwingPlaySort",
+            "plFullPlaySort",
+            "ItemRankScore"
+        ],
+        "personalPlaylist": [
+            "plGlobalHotDowngradeSort",
+            "plHotRtSort",
+            "plHisSort",
+            "psSwingClickSort",
+            "plSwingPlaySort",
+            "plFullPlaySort",
+            "ItemRankScore"
+        ],
+        "kingkongPersonalSong": [
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "vipRank": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "vipAreaSong": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "vipSingerDiversitySort"
+        ],
+        "playlistSimilarSong": [
+            "realtimeDowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "personalSong": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "vipExclusive": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "dynamicColumn": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "dynamicColumn_01": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti",
+            "specialCpSort"
+        ],
+        "dynamicColumn_02": [
+            "GlobalHotV3DowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ],
+        "reactivatedUser": [
+            "GlobalHotFPDowngradeSort",
+            "ItemRankScore",
+            "DiversityRuleSortMulti"
+        ]
+    },
+    "AlgoConfs": [
+        {
+            "Name": "ps_dfm_v6_dfm_v1",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "Timeout": 20,
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/ps_dfm_v6_dfm_v1",
+                "Auth": "M2I0NTU5NmIyNTJlY2Q4MDMzOWM0YmQ4OTFkZjUzYTFjNDQyNDBjYw==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "ghost_model",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/ghost_model",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "dr_dfm_v2_dfm_v1",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/dr_dfm_v2_dfm_v1",
+                "Auth": "YjEwZTI5NDBjYTRjMjI1YmRkNTMwODc5YmU4MzQ4MGRkOTQxOTQ5ZA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "mmd_dfm_v1_dfm_v1",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/mmd_dfm_v1_dfm_v1",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "mmd_mmoe_v1_mmoe_v3",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutClassificationResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/mmd_mmoe_v1_mmoe_v3",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "mmd_mmoe_v1_mmoe_v4",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutClassificationResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/mmd_mmoe_v1_mmoe_v4",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "song_scene_v1",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutClassificationResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/song_scene_v1",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "song_scene_v2",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutClassificationResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/song_scene_v2",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "drpl_dfm_v2_dfm_v1",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/drpl_dfm_v2_dfm_v1",
+                "Auth": "NDBhMjdlNDE1YmU5M2U2MTFkZjE0N2YyOGFmMjNmMjhjYTNlYTE5Yg==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "drpl_dfm_v2_dfm_v2",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutValResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/drpl_dfm_v2_dfm_v2",
+                "Auth": "NDBhMjdlNDE1YmU5M2U2MTFkZjE0N2YyOGFmMjNmMjhjYTNlYTE5Yg==",
+                "EndpointType": "DIRECT"
+            }
+        },
+        {
+            "Name": "mmd_mmoe_v1_mmoe_v2",
+            "Type": "EAS",
+            "EasConf": {
+                "Processor": "EasyRec",
+                "ResponseFuncName": "torchrecMutClassificationResponseFunc",
+                "Url": "http://1258461310146825.vpc.cn-shenzhen.pai-eas.aliyuncs.com/api/predict/mmd_mmoe_v1_mmoe_v2",
+                "Auth": "NTliMjg2MWMxNDc2NmE4YTI4NjkwNjg5ZjcxMTQ2YTg2MWRjY2IzMA==",
+                "EndpointType": "DIRECT"
+            }
+        }
+    ],
+    "RankConf": {
+        "generalSong": {
+            "RankAlgoList": [
+                "mmd_dfm_v1_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${mmd_dfm_v1_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "musicModelDefault": {
+            "RankAlgoList": [
+                "mmd_dfm_v1_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${mmd_dfm_v1_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "musicModelNew": {
+            "RankAlgoList": [
+                "mmd_dfm_v1_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${mmd_dfm_v1_dfm_v1_probs}"
+        },
+        "musicModelAttuned": {
+            "RankAlgoList": [
+                "mmd_dfm_v1_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${mmd_dfm_v1_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "personalSong": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "kingkongPersonalSong": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "vipExclusive": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "dynamicColumn": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "dynamicColumn_01": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "dynamicColumn_02": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "dailyReco": {
+            "RankAlgoList": [
+                "dr_dfm_v2_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${dr_dfm_v2_dfm_v1_probs}"
+        },
+        "touristDailySong": {
+            "RankAlgoList": [
+                "dr_dfm_v2_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${dr_dfm_v2_dfm_v1_probs}"
+        },
+        "watchDailyReco": {
+            "RankAlgoList": [
+                "dr_dfm_v2_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${dr_dfm_v2_dfm_v1_probs}"
+        },
+        "vipRank": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "vipAreaSong": {
+            "RankAlgoList": [
+                "ps_dfm_v6_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${ps_dfm_v6_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "recommendPlaylist": {
+            "RankAlgoList": [
+                "drpl_dfm_v2_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${drpl_dfm_v2_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "personalPlaylist": {
+            "RankAlgoList": [
+                "drpl_dfm_v2_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${drpl_dfm_v2_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        },
+        "playlistSimilarSong": {
+            "RankAlgoList": [
+                "mmd_dfm_v1_dfm_v1"
+            ],
+            "BatchCount": 500,
+            "Processor": "EasyRec",
+            "RankScore": "${mmd_dfm_v1_dfm_v1_probs}",
+            "ContextFeatures": [
+                "none"
+            ]
+        }
+    },
+    "FeatureConfs": {
+        "musicModelDefault": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "Ghost_Model",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "music_model_default",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "generalSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "Ghost_Model",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "music_model_default",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "musicModelNew": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "mmd_dfm_v1_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "musicModelAttuned": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "mmd_dfm_v1_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "personalSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "Ghost_Model",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "kingkongPersonalSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "Ghost_Model",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "vipExclusive": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dynamicColumn": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dynamicColumn_01": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dynamicColumn_02": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dailyReco": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "Ghost_Model",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "daily_recommend",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "touristDailySong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "dr_dfm_v2_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "daily_recommend",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "watchDailyReco": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "dr_dfm_v2_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "daily_recommend",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "vipRank": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "vipAreaSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58463",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "recommendPlaylist": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "drpl_dfm_v2_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58459",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "recommendPlaylistV2": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "drpl_dfm_v2_dfm_v2",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58459",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "personalPlaylist": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "drpl_dfm_v2_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "58459",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "playlistSimilarSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "mmd_dfm_v1_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "music_model_default",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        },
+        "reactivatedUser": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreModelName": "ps_dfm_v6_dfm_v1",
+                        "FeatureStoreEntityName": "user",
+                        "FeatureStore": "user"
+                    },
+                    "Features": [
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "day_h",
+                            "Normalizer": "hour_in_day",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureName": "week_day",
+                            "Normalizer": "weekday",
+                            "FeatureStore": "user"
+                        },
+                        {
+                            "FeatureType": "new_feature",
+                            "FeatureStore": "user",
+                            "Normalizer": "const_value",
+                            "FeatureValue": "music_model_default",
+                            "FeatureName": "event_scene_id"
+                        },
+                        {
+                            "FeatureType": "raw_feature",
+                            "FeatureStore": "user",
+                            "FeatureSource": "user:uid",
+                            "RemoveFeatureSource": false,
+                            "FeatureName": "identity_id"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "UserFeatureConfs": {
+        "personalSongUser": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreViewName": "dim_rec_user_info_dfp_1001",
+                        "UserSelectFields": "gender,age_group,province",
+                        "FeatureStore": "user"
+                    }
+                }
+            ]
+        },
+        "dailyRecoUser": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreViewName": "dim_rec_user_info_dfp_1001",
+                        "UserSelectFields": "gender,age_group,province",
+                        "FeatureStore": "user"
+                    }
+                }
+            ]
+        },
+        "musicModelDefault": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreViewName": "dim_rec_user_info_dfp_1001",
+                        "UserSelectFields": "gender,age_group,province,music_vip_type",
+                        "FeatureStore": "user"
+                    }
+                }
+            ]
+        },
+        "generalSong": {
+            "AsynLoadFeature": true,
+            "FeatureLoadConfs": [
+                {
+                    "FeatureDaoConf": {
+                        "AdapterType": "featurestore",
+                        "FeatureStoreName": "fs_pairec",
+                        "FeatureKey": "user:uid",
+                        "FeatureStoreViewName": "dim_rec_user_info_dfp_1001",
+                        "UserSelectFields": "gender,age_group,province,music_vip_type",
+                        "FeatureStore": "user"
+                    }
+                }
+            ]
+        }
+    },
+    "FeatureStoreConfs": {
+        "fs_pairec": {
+            "RegionId": "cn-shenzhen",
+            "AccessId": "${AccessKey}",
+            "AccessKey": "${AccessSecret}",
+            "ProjectName": "prd_fs",
+            "FeatureDBUsername": "featureuser",
+            "FeatureDBPassword": "as*20250410!@#"
+        }
+    },
+    "RecallConfs": [
+        {
+            "Name": "global_hot_v3",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 200,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ps_dfm_v2_global_hot_v2"
+            }
+        },
+        {
+            "Name": "global_hot_v4",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ps_dfm_v2_global_hot_v4"
+            }
+        },
+        {
+            "Name": "global_hot_full_play",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 300,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "mmd_mmoe_v1_global_hot_v1"
+            }
+        },
+        {
+            "Name": "vip_global_hot",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 100,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ps_dfm_v2_member_global_hot_v2"
+            }
+        },
+        {
+            "Name": "etrec_v2",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ps_dfm_v2_etrec_u2i2i_score_v1"
+            }
+        },
+        {
+            "Name": "full_play",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_full_play_song_dfn"
+            }
+        },
+        {
+            "Name": "swing_v2",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ps_dfm_v2_swing_u2i2i_score_v1"
+            }
+        },
+        {
+            "Name": "user_interact",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_interact_song_dfn"
+            }
+        },
+        {
+            "Name": "user_collect",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_collect_song_dfn"
+            }
+        },
+        {
+            "Name": "user_history",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 500,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_play_history_offline_dfn"
+            }
+        },
+        {
+            "Name": "pl_etrec",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 100,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_etrec_u2i2i_score_v1"
+            }
+        },
+        {
+            "Name": "pl_etrec_num",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 15,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_etrec_u2i2i_score_v1"
+            }
+        },
+        {
+            "Name": "pl_global_hot",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 50,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_agb_v1"
+            }
+        },
+        {
+            "Name": "pl_history",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 50,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_history_v1"
+            }
+        },
+        {
+            "Name": "pl_history_num",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 10,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_history_v1"
+            }
+        },
+        {
+            "Name": "pl_hour_hot",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 9,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_global_hot_hour_v1"
+            }
+        },
+        {
+            "Name": "pl_hour_hot_num",
+            "RecallType": "UserGlobalHotRecall",
+            "RecallCount": 10,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_global_hot_hour_v1"
+            }
+        },
+        {
+            "Name": "pl_singer",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 50,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_singer_v2"
+            }
+        },
+        {
+            "Name": "song_full_play",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 100,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_recall_history_dfp_v2"
+            }
+        },
+        {
+            "Name": "song_full_play_num",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 10,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_recall_history_dfp_v2"
+            }
+        },
+        {
+            "Name": "swing_play",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 100,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_swing_u2i2i_score_v2"
+            }
+        },
+        {
+            "Name": "swing_play_num",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 6,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_swing_u2i2i_score_v2"
+            }
+        },
+        {
+            "Name": "swing_click",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 10,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "ads_songlist_recall_swing_u2i2i_score_v3"
+            }
+        },
+        {
+            "Name": "realtimeu2i",
+            "RecallType": "RealTimeU2IRecall",
+            "RecallCount": 300,
+            "RealTimeUser2ItemDaoConf": {
+                "UserTriggerDaoConf": {
+                    "AdapterType": "featurestore",
+                    "FeatureStoreName": "fs_pairec",
+                    "FeatureStoreViewName": "rec_recall_song_behavior_based_rt",
+                    "EventWeight": "play:1",
+                    "EventPlayTime": "play:60",
+                    "WeightExpression": "(-0.2)*((currentTime-eventTime)/3600/24)",
+                    "TriggerCount": 10,
+                    "PlayTimeFieldName": "event_value",
+                    "TimestampFieldName": "event_timestamp"
+                },
+                "Item2ItemFeatureViewName": "ps_dfm_v2_etrec_i2i_item_group_v1",
+                "SimilarItemIdField": "item_ids"
+            }
+        },
+        {
+            "Name": "user_choose_signer",
+            "RecallType": "UserCollaborativeFilterRecall",
+            "RecallCount": 15,
+            "UserCollaborativeDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "User2ItemFeatureViewName": "ps_user_choose_singers_v1",
+                "Item2ItemFeatureViewName": "ps_singer_songs_pool_v1",
+                "Normalization": "on"
+            }
+        },
+        {
+            "Name": "ps_full_play",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 200,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "song_swing_u2i2i_score_v2"
+            }
+        },
+        {
+            "Name": "valid_play",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 200,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "song_swing_u2i2i_score_v3"
+            }
+        },
+        {
+            "Name": "collect",
+            "RecallType": "UserCustomRecall",
+            "RecallCount": 200,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "song_swing_u2i2i_score_v4"
+            }
+        },
+        {
+            "Name": "user_group_hot",
+            "RecallType": "UserGroupHotRecall",
+            "RecallCount": 100,
+            "Triggers": [
+                {
+                    "TriggerKey": "province"
+                },
+                {
+                    "TriggerKey": "gender"
+                },
+                {
+                    "TriggerKey": "age_group"
+                }
+            ],
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "song_global_hot_crowd_v1"
+            }
+        },
+        {
+            "Name": "realtimeu2i_v2",
+            "RecallType": "RealTimeU2IRecall",
+            "RecallCount": 300,
+            "RealTimeUser2ItemDaoConf": {
+                "UserTriggerDaoConf": {
+                    "AdapterType": "featurestore",
+                    "FeatureStoreName": "fs_pairec",
+                    "FeatureStoreViewName": "ads_rec_user_u2i_behavior_dfp",
+                    "EventWeight": "play:1;collect:5",
+                    "EventPlayTime": "play:60",
+                    "WeightExpression": "exp((-0.2)*((currentTime-eventTime)/3600/24))",
+                    "TriggerCount": 100,
+                    "PlayTimeFieldName": "event_value",
+                    "TimestampFieldName": "event_timestamp"
+                },
+                "Item2ItemFeatureViewName": "ps_dfm_v2_etrec_i2i_item_group_v1",
+                "SimilarItemIdField": "item_ids"
+            }
+        }
+    ],
+    "SceneConfs": {
+        "musicModelDefault": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3",
+                    "user_group_hot"
+                ],
+                "AutoInvokeCallBack": true,
+                "AutoInvokeCallBackRate": 100
+            }
+        },
+        "generalSong": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3",
+                    "user_group_hot"
+                ],
+                "AutoInvokeCallBack": true,
+                "AutoInvokeCallBackRate": 100
+            }
+        },
+        "musicModelNew": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "musicModelAttuned": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i",
+                    "swing_v2",
+                    "etrec_v2",
+                    "user_history",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "personalSong": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i_v2",
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3",
+                    "user_choose_signer"
+                ],
+                "FallbackConfig": {
+                    "Timeout": 10,
+                    "FeatureStoreName": "fs_pairec",
+                    "FeatureStoreViewName": "ps_dfm_v2_global_hot_v2",
+                    "CompleteItemsIfNeed": true
+                },
+                "AutoInvokeCallBack": true,
+                "AutoInvokeCallBackRate": 100
+            }
+        },
+        "kingkongPersonalSong": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play"
+                ]
+            }
+        },
+        "vipExclusive": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "vip_global_hot"
+                ]
+            }
+        },
+        "dynamicColumn": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "dynamicColumn_01": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "dynamicColumn_02": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "dailyReco": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ],
+                "AutoInvokeCallBack": true,
+                "AutoInvokeCallBackRate": 100
+            }
+        },
+        "touristDailySong": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "watchDailyReco": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "user_interact",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "vipRank": {
+            "default": {
+                "RecallNames": [
+                    "full_play",
+                    "swing_v2",
+                    "etrec_v2",
+                    "vip_global_hot"
+                ]
+            }
+        },
+        "vipAreaSong": {
+            "default": {
+                "RecallNames": [
+                    "full_play",
+                    "swing_v2",
+                    "etrec_v2",
+                    "vip_global_hot"
+                ]
+            }
+        },
+        "recommendPlaylist": {
+            "default": {
+                "RecallNames": [
+                    "pl_history",
+                    "song_full_play",
+                    "swing_play",
+                    "swing_click",
+                    "pl_etrec",
+                    "pl_singer",
+                    "pl_hour_hot",
+                    "pl_global_hot"
+                ]
+            }
+        },
+        "personalPlaylist": {
+            "default": {
+                "RecallNames": [
+                    "pl_history",
+                    "song_full_play",
+                    "swing_play",
+                    "swing_click",
+                    "pl_etrec",
+                    "pl_singer",
+                    "pl_hour_hot",
+                    "pl_global_hot"
+                ]
+            }
+        },
+        "playlistSimilarSong": {
+            "default": {
+                "RecallNames": [
+                    "realtimeu2i",
+                    "swing_v2",
+                    "etrec_v2",
+                    "global_hot_v3"
+                ]
+            }
+        },
+        "reactivatedUser": {
+            "default": {
+                "RecallNames": [
+                    "user_collect",
+                    "full_play",
+                    "global_hot_full_play"
+                ]
+            }
+        },
+        "": {
+            "default": {
+                "RecallNames": []
+            }
+        }
+    },
+    "FilterNames": {
+        "musicModelDefault": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "exposure_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "invalid_relation_filter",
+            "unlike_relation_filter",
+            "not_vip_Filter",
+            "tme_cp_filter",
+            "model_exposure_filter",
+            "CompletelyFairFilter"
+        ],
+        "generalSong": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "exposure_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "invalid_relation_filter",
+            "unlike_relation_filter",
+            "not_vip_Filter",
+            "tme_cp_filter",
+            "real_expose_filter",
+            "CompletelyFairFilter"
+        ],
+        "musicModelNew": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "play_history_offline_filter",
+            "unlike_history_offline_filter",
+            "exposure_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "tme_cp_filter",
+            "model_exposure_filter",
+            "CompletelyFairFilter"
+        ],
+        "musicModelAttuned": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "exposure_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "tme_cp_filter",
+            "model_exposure_filter",
+            "CompletelyFairFilter"
+        ],
+        "personalSong": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "vipExclusive": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "item_business_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "dynamicColumn": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "play_history_offline_filter",
+            "invalid_relation_filter",
+            "unlike_relation_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "dynamicColumn_01": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "limited_Free_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "dynamicColumn_02": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_tag_filter",
+            "common_filter",
+            "play_history_offline_filter",
+            "invalid_relation_filter",
+            "unlike_relation_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "dailyReco": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "dr_exp_not_clk_play_filter",
+            "item_tag_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "touristDailySong": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "dr_exp_not_clk_play_filter",
+            "item_tag_filter",
+            "not_vip_business_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "watchDailyReco": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "watch_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "vipRank": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_business_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "vipAreaSong": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "item_business_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "recommendPlaylist": [
+            "UniqueFilter",
+            "songlist_filter",
+            "songlist_np_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "personalPlaylist": [
+            "UniqueFilter",
+            "songlist_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "playlistSimilarSong": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ],
+        "reactivatedUser": [
+            "UniqueFilter",
+            "item_state_filter",
+            "song_valid_filter",
+            "name_unique_filter",
+            "not_clk_play_offline_filter",
+            "unlike_history_offline_filter",
+            "unlike_rt_filter",
+            "tme_cp_filter",
+            "CompletelyFairFilter"
+        ]
+    },
+    "FilterConfs": [
+        {
+            "Name": "CompletelyFairFilter",
+            "FilterType": "CompletelyFairFilter",
+            "RetainNum": 500
+        },
+        {
+            "Name": "watch_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "song_business_model,cp_id"
+            },
+            "FilterParams": [
+                {
+                    "Name": "song_business_model",
+                    "Type": "string",
+                    "Operator": "not_in",
+                    "Value": [
+                        "S3",
+                        "S113"
+                    ]
+                },
+                {
+                    "Name": "cp_id",
+                    "Type": "int",
+                    "Operator": "not_in",
+                    "Value": [
+                        298
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "tme_cp_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "cp_id"
+            },
+            "FilterParams": [
+                {
+                    "Name": "cp_id",
+                    "Type": "int",
+                    "Operator": "not_in",
+                    "Value": [
+                        298
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "play_history_offline_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_play_history_offline_dfn"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "unlike_history_offline_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_unlike_history_offline_dfn"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "exposure_filter",
+            "FilterType": "User2ItemExposureFilter",
+            "WriteLog": false,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_play_history_offline_rt"
+            }
+        },
+        {
+            "Name": "unlike_rt_filter",
+            "FilterType": "User2ItemExposureFilter",
+            "WriteLog": false,
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_unlike_history_offline_rt"
+            }
+        },
+        {
+            "Name": "dr_exp_not_clk_play_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_dailyreco_user_exp_not_clk_play_offline_dfn"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "songlist_np_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_songlist_exp_not_play_offline_dfn_v2"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "item_state_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "song_name_purified,singer_id"
+            }
+        },
+        {
+            "Name": "name_unique_filter",
+            "FilterType": "DimensionFieldUniqueFilter",
+            "Dimension": "song_name_purified"
+        },
+        {
+            "Name": "not_clk_play_offline_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_exp_not_clk_play_offline_dfn"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "invalid_relation_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_invalid_song_feedback_rt"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "unlike_relation_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_unlike_song_feedback_rt"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "item_tag_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "style_tag_id_lv2,style_tag_id_lv3"
+            },
+            "FilterParams": [
+                {
+                    "Name": "style_tag_id_lv2",
+                    "Type": "string",
+                    "Operator": "not_in",
+                    "Value": [
+                        "20022",
+                        "20473"
+                    ]
+                },
+                {
+                    "Operator": "expression",
+                    "value": "not any(split(item.style_tag_id_lv3, ','), { # in ['90817', '30598', '30599', '30600', '30601', '30602', '30603', '30604', '30605', '30606', '30607', '30608', '30609', '91065', '455256', '455257', '420401', '420402', '420403', '420404', '420405', '420406', '30715'] })"
+                }
+            ]
+        },
+        {
+            "Name": "item_business_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "song_business_model"
+            },
+            "FilterParams": [
+                {
+                    "Name": "song_business_model",
+                    "Type": "string",
+                    "Operator": "in",
+                    "Value": [
+                        "S108",
+                        "S109",
+                        "S110",
+                        "S120"
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "not_vip_Filter",
+            "FilterType": "ConditionFilter",
+            "ConditionFilterConfs": {
+                "FilterConfs": [
+                    {
+                        "Conditions": [
+                            {
+                                "Name": "music_vip_type",
+                                "Type": "int",
+                                "Domain": "user",
+                                "Operator": "in",
+                                "Value": [
+                                    1
+                                ]
+                            }
+                        ],
+                        "FilterName": "not_vip_business_filter"
+                    }
+                ]
+            }
+        },
+        {
+            "Name": "not_vip_business_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "song_business_model"
+            },
+            "FilterParams": [
+                {
+                    "Name": "song_business_model",
+                    "Type": "string",
+                    "Operator": "not_in",
+                    "Value": [
+                        "S107",
+                        "S108",
+                        "S109",
+                        "S110",
+                        "S112",
+                        "S112",
+                        "S120"
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "song_valid_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "is_valid_after_3d"
+            },
+            "FilterParams": [
+                {
+                    "Name": "is_valid_after_3d",
+                    "Type": "int",
+                    "Operator": "equal",
+                    "Value": 1
+                }
+            ]
+        },
+        {
+            "Name": "long_tail_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "is_long_tail"
+            },
+            "FilterParams": [
+                {
+                    "Name": "is_long_tail",
+                    "Type": "int",
+                    "Operator": "equal",
+                    "Value": 1
+                }
+            ]
+        },
+        {
+            "Name": "pl_item_state_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "drpl_dfm_v1_dim_rec_item_songlist_info_dfp_1001_all_feat_v1",
+                "ItemFieldName": "item_id",
+                "SelectFields": "is_valid_songlist"
+            },
+            "FilterParams": [
+                {
+                    "Name": "is_valid_songlist",
+                    "Type": "bigint",
+                    "Operator": "equal",
+                    "Value": 1
+                }
+            ]
+        },
+        {
+            "Name": "common_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "low_quality_score"
+            },
+            "FilterParams": [
+                {
+                    "Name": "low_quality_score",
+                    "Type": "int",
+                    "Operator": "less",
+                    "Value": 3
+                }
+            ]
+        },
+        {
+            "Name": "model_exposure_filter",
+            "FilterType": "User2ItemExposureFilter",
+            "MaxItems": 100,
+            "TimeInterval": 21600,
+            "WriteLog": true,
+            "WriteLogExcludeScenes": [
+                "vipExclusive",
+                "dynamicColumn_04",
+                "dynamicColumn_03",
+                "dynamicColumn_02",
+                "dynamicColumn_01",
+                "watchDailyReco",
+                "personalPlaylist",
+                "reactivatedUser",
+                "dynamicColumn",
+                "playlistSimilarSong",
+                "recommendPlaylist",
+                "vipRank",
+                "dailyReco",
+                "personalSong",
+                "vipAreaSong",
+                "touristDailySong"
+            ],
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "all_scene_expose_history_rt"
+            }
+        },
+        {
+            "Name": "real_expose_filter",
+            "FilterType": "User2ItemExposureFilter",
+            "MaxItems": 300,
+            "TimeInterval": 21600,
+            "WriteLog": false,
+            "DaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "all_scene_real_expose_history_rt"
+            }
+        },
+        {
+            "Name": "offline_expose_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_global_expose_no_full_play_dfn"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "limited_Free_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_song_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "cp_id,song_business_model"
+            },
+            "FilterParams": [
+                {
+                    "Type": "or",
+                    "Operator": "bool",
+                    "Configs": [
+                        {
+                            "Type": "and",
+                            "Operator": "bool",
+                            "Configs": [
+                                {
+                                    "Name": "cp_id",
+                                    "Type": "int",
+                                    "Operator": "equal",
+                                    "Value": 298
+                                },
+                                {
+                                    "Name": "song_business_model",
+                                    "Type": "string",
+                                    "Operator": "not_in",
+                                    "Value": [
+                                        "S113",
+                                        "S114",
+                                        "S107",
+                                        "S108",
+                                        "S120"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Type": "and",
+                            "Operator": "bool",
+                            "Configs": [
+                                {
+                                    "Name": "song_business_model",
+                                    "Type": "string",
+                                    "Operator": "in",
+                                    "Value": [
+                                        "S107",
+                                        "S108",
+                                        "S109",
+                                        "S110",
+                                        "S111",
+                                        "S112",
+                                        "S119",
+                                        "S120"
+                                    ]
+                                },
+                                {
+                                    "Name": "cp_id",
+                                    "Type": "int",
+                                    "Operator": "not_equal",
+                                    "Value": 9
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "songlist_filter",
+            "FilterType": "ItemStateFilter",
+            "ItemStateDaoConf": {
+                "AdapterType": "featurestore",
+                "FeatureStoreName": "fs_pairec",
+                "FeatureStoreViewName": "dim_rec_item_songlist_info_dfp_1001",
+                "ItemFieldName": "item_id",
+                "SelectFields": "is_vip_playlist,song_nums"
+            },
+            "FilterParams": [
+                {
+                    "Name": "is_vip_playlist",
+                    "Type": "int",
+                    "Operator": "equal",
+                    "Value": 0
+                },
+                {
+                    "Name": "song_nums",
+                    "Type": "int",
+                    "Operator": "greater",
+                    "Value": 10
+                }
+            ]
+        },
+        {
+            "Name": "expose_cluster_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_expose_cluster_filter_list_dfp"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        },
+        {
+            "Name": "skip_song_filter",
+            "FilterType": "User2ItemCustomFilter",
+            "DaoConf": {
+                "AdapterType": "hologres",
+                "HologresName": "pai_rec",
+                "HologresTableName": "ads.ads_rec_user_skip_song_filter_list_dfp"
+            },
+            "ItemStateCacheSize": 10000,
+            "ItemStateCacheTime": 3600
+        }
+    ],
+    "HologresConfs": {
+        "pai_rec": {
+            "DSN": "postgres://${AccessKey}:${AccessSecret}@hgprecn-cn-btz4a6u54002-cn-shenzhen-vpc-st.hologres.aliyuncs.com:80/pai_rec?sslmode=disable&connect_timeout=1"
+        }
+    },
+    "FeatureLogConfs": {
+        "musicModelDefault": {
+            "OutputType": "datahub",
+            "Rate": 100,
+            "DatahubName": "dh_feature_log",
+            "UserFeatures": "*",
+            "ItemFeatures": "*"
+        }
+    },
+    "DatahubConfs": {
+        "pairec_callback_dh": {
+            "Endpoint": "http://dh-cn-shenzhen-int-vpc.aliyuncs.com",
+            "ProjectName": "alls_realtime_dws",
+            "TopicName": "pairec_callback_ghost",
+            "Schemas": [
+                {
+                    "Field": "request_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "module",
+                    "Type": "string"
+                },
+                {
+                    "Field": "scene",
+                    "Type": "string"
+                },
+                {
+                    "Field": "request_time",
+                    "Type": "integer"
+                },
+                {
+                    "Field": "user_features",
+                    "Type": "string"
+                },
+                {
+                    "Field": "item_features",
+                    "Type": "string"
+                },
+                {
+                    "Field": "request_info",
+                    "Type": "string"
+                },
+                {
+                    "Field": "user_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "item_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "raw_features",
+                    "Type": "string"
+                },
+                {
+                    "Field": "generate_features",
+                    "Type": "string"
+                },
+                {
+                    "Field": "context_features",
+                    "Type": "string"
+                }
+            ]
+        },
+        "dh_feature_log": {
+            "Endpoint": "http://dh-cn-shenzhen-int-vpc.aliyuncs.com",
+            "ProjectName": "alls_realtime_dws",
+            "TopicName": "pairec_feature_log",
+            "Schemas": [
+                {
+                    "Field": "request_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "scene_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "exp_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "request_time",
+                    "Type": "integer"
+                },
+                {
+                    "Field": "user_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "user_features",
+                    "Type": "string"
+                },
+                {
+                    "Field": "item_id",
+                    "Type": "string"
+                },
+                {
+                    "Field": "position",
+                    "Type": "string"
+                },
+                {
+                    "Field": "item_features",
+                    "Type": "string"
+                }
+            ]
+        }
+    },
+    "CallBackConfs": {
+        "musicModelDefault": {
+            "DataSource": {
+                "Name": "pairec_callback_dh",
+                "Type": "datahub"
+            },
+            "RankConf": {
+                "RankAlgoList": [
+                    "ghost_model"
+                ],
+                "ContextFeatures": [
+                    "none"
+                ],
+                "Processor": "EasyRec"
+            },
+            "RawFeatures": true,
+            "RawFeaturesRate": 100,
+            "ItemSize": 100,
+            "ItemSizeRate": 100,
+            "UseUserFeatures": true
+        },
+        "personalSong": {
+            "DataSource": {
+                "Name": "pairec_callback_dh",
+                "Type": "datahub"
+            },
+            "RankConf": {
+                "RankAlgoList": [
+                    "ghost_model"
+                ],
+                "ContextFeatures": [
+                    "none"
+                ],
+                "Processor": "EasyRec"
+            },
+            "RawFeatures": true,
+            "RawFeaturesRate": 100,
+            "ItemSize": 100,
+            "ItemSizeRate": 100,
+            "UseUserFeatures": true
+        },
+        "dailyReco": {
+            "DataSource": {
+                "Name": "pairec_callback_dh",
+                "Type": "datahub"
+            },
+            "RankConf": {
+                "RankAlgoList": [
+                    "ghost_model"
+                ],
+                "ContextFeatures": [
+                    "none"
+                ],
+                "Processor": "EasyRec"
+            },
+            "RawFeatures": true,
+            "RawFeaturesRate": 100,
+            "ItemSize": 100,
+            "ItemSizeRate": 100,
+            "UseUserFeatures": true
+        }
+    }
+}
