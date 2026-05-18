@@ -61,6 +61,8 @@ message CustomPLE {
     repeated ExtractionNetwork extraction_networks = 1;
     // task tower
     repeated TaskTower task_towers = 2;
+    // enable uncertainty weighting for dynamic loss balancing
+    optional bool use_uncertainty_weighting = 3 [default = true];
 }
 
 message CustomPLEV1 {
