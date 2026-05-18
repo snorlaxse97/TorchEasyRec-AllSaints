@@ -1,0 +1,50 @@
+graph TD
+    A["输入数据<br/>query: (B, D_q)<br/>sequence: (B, T, D_s)<br/>sequence_length: (B,)"] --> B["提取输入<br/>B=batch_size<br/>T=max_seq_len<br/>D_q=query_dim, D_s=seq_dim"]
+    
+    B --> C{"是否设置<br/>max_seq_length?"}
+    C -->|是| D["截断序列<br/>sequence: (B, max_len, D_s)<br/>sequence_length: clamp到max_len"]
+    C -->|否| E["保持原序列<br/>sequence: (B, T, D_s)"]
+    D --> F
+    E --> F
+    
+    F["生成序列掩码<br/>mask: (B, T)<br/>标记有效位置 True/False"]
+    
+    F --> G{"query_dim &lt; sequence_dim?"}
+    G -->|是| H["Padding Query<br/>query: (B, D_q) → (B, D_s)<br/>右侧补0对齐维度"]
+    G -->|否| I["保持 Query<br/>query: (B, D_s)"]
+    H --> J
+    I --> J
+    
+    J["扩展 Query 维度<br/>queries: (B, T, D_s)<br/>复制到每个时间步"]
+    
+    J --> K["构造注意力输入<br/>拼接4种特征"]
+    K --> L["queries<br/>(B, T, D_s)"]
+    K --> M["sequence<br/>(B, T, D_s)"]
+    K --> N["queries - sequence<br/>(B, T, D_s)"]
+    K --> O["queries * sequence<br/>(B, T, D_s)"]
+    
+    L --> P["拼接 concat<br/>attn_input: (B, T, 4×D_s)"]
+    M --> P
+    N --> P
+    O --> P
+    
+    P --> Q["MLP 网络<br/>attn_output: (B, T, hidden_dim)"]
+    Q --> R["Linear 层<br/>attn_output: (B, T, 1)<br/>每个位置一个分数"]
+    R --> S["转置<br/>attn_output: (B, 1, T)<br/>准备矩阵乘法"]
+    
+    S --> T["应用序列掩码<br/>mask: (B, T)"]
+    F --> T
+    T --> U["掩码无效位置<br/>scores: (B, 1, T)<br/>无效位置填充负无穷"]
+    
+    U --> V["Softmax 归一化<br/>scores: (B, 1, T)<br/>注意力权重和为1"]
+    
+    V --> W["加权求和 (矩阵乘法)<br/>(B, 1, T) @ (B, T, D_s)<br/>= (B, 1, D_s)"]
+    M --> W
+    
+    W --> X["压缩维度<br/>output: (B, D_s)<br/>用户兴趣表示向量"]
+    
+    style A fill:#e1f5ff
+    style X fill:#ffe1e1
+    style K fill:#fff4e1
+    style Q fill:#f0e1ff
+    style V fill:#e1ffe1
