@@ -126,6 +126,65 @@ def init_process_group() -> Tuple[torch.device, str]:
     return device, backend
 
 
+def log_model_parameters(model: nn.Module) -> None:
+    """Log model parameter statistics.
+    
+    Args:
+        model (nn.Module): the model to analyze.
+    """
+    is_rank_zero = int(os.environ.get("RANK", 0)) == 0
+    if not is_rank_zero:
+        return
+    
+    dense_params = 0
+    sparse_params = 0
+    trainable_params = 0
+    
+    for name, param in model.named_parameters():
+        param_type = type(param).__name__
+        param_count = param.numel()
+        
+        # Check if it's a Sparse/Embedding parameter
+        # TorchRec uses different types: ShardedTensor, DTensor, TableBatchedEmbeddingSlice, etc.
+        is_sparse = (
+            isinstance(param, ShardedTensor) or
+            param_type in ['DTensor', 'TableBatchedEmbeddingSlice', 'ShardedTensor'] or
+            'embedding' in name.lower() or
+            '.ebc.' in name or  # EmbeddingBagCollection
+            '.ec.' in name      # EmbeddingCollection
+        )
+        
+        if is_sparse:
+            sparse_params += param_count
+            if param.requires_grad:
+                trainable_params += param_count
+        else:
+            dense_params += param_count
+            if param.requires_grad:
+                trainable_params += param_count
+    
+    total_params = dense_params + sparse_params
+    
+    # Calculate percentages
+    sparse_ratio = (sparse_params / total_params * 100) if total_params > 0 else 0
+    dense_ratio = (dense_params / total_params * 100) if total_params > 0 else 0
+    trainable_ratio = (trainable_params / total_params * 100) if total_params > 0 else 0
+    
+    # Calculate sizes (FP32: 4 bytes per parameter)
+    total_size_mb = total_params * 4 / 1024 / 1024
+    sparse_size_mb = sparse_params * 4 / 1024 / 1024
+    dense_size_mb = dense_params * 4 / 1024 / 1024
+    
+    logger.info("="*60)
+    logger.info("Model Parameter Statistics:")
+    logger.info(f"  Total parameters: {total_params:,} (Total model size: {total_size_mb:.2f} MB)")
+    logger.info(f"  - Sparse (Embedding) parameters: {sparse_params:,} ({sparse_ratio:.2f}%, {sparse_size_mb:.2f} MB)")
+    logger.info(f"  - Dense (MLP/Linear) parameters: {dense_params:,} ({dense_ratio:.2f}%, {dense_size_mb:.2f} MB)")
+    logger.info(f"  Trainable parameters: {trainable_params:,} ({trainable_ratio:.2f}%)")
+    logger.info(f"  Non-trainable parameters: {total_params - trainable_params:,} ({100 - trainable_ratio:.2f}%)")
+    logger.info("="*60)
+
+
 def _create_features(
     feature_configs: List[FeatureConfig], data_config: DataConfig
 ) -> List[BaseFeature]:
@@ -757,6 +816,9 @@ def train_and_evaluate(
         plan=plan,
     )
 
+    # Log model parameter statistics
+    log_model_parameters(model)
+
     dense_optim_cls, dense_optim_kwargs = optimizer_builder.create_dense_optimizer(
         pipeline_config.train_config.dense_optimizer
     )
@@ -859,6 +921,9 @@ def evaluate(
         logger.info(str(plan))
 
     model = DistributedModelParallel(module=model, device=device, plan=plan)
+
+    # Log model parameter statistics
+    log_model_parameters(model)
 
     global_step = None
     if not checkpoint_path:
