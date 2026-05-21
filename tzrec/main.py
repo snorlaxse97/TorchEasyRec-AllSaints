@@ -89,6 +89,29 @@ from tzrec.utils.state_dict_util import fix_mch_state, init_parameters
 from tzrec.version import __version__ as tzrec_version
 
 
+def set_random_seed(seed: int = 42) -> None:
+    """Set random seed for reproducibility.
+    
+    Args:
+        seed (int): random seed value, default is 42.
+    """
+    import random
+    import numpy as np
+    
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    # 如果使用了 TorchRec 的分布式大 Embedding，这一步能保证多卡间的初始化同步
+    # 彻底杜绝稀疏权重初始化不一致导致的特征飘移
+    # Note: Setting deterministic mode may impact performance
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    logger.info(f"Set random seed to {seed}")
+
+
 def init_process_group() -> Tuple[torch.device, str]:
     """Init process_group, device, rank, backend."""
     rank = int(os.environ.get("LOCAL_RANK", 0))
@@ -640,6 +663,11 @@ def train_and_evaluate(
     device, backend = init_process_group()
     is_rank_zero = int(os.environ.get("RANK", 0)) == 0
     is_local_rank_zero = int(os.environ.get("LOCAL_RANK", 0)) == 0
+    
+    # Set random seed if specified
+    if pipeline_config.train_config.HasField("random_seed"):
+        set_random_seed(pipeline_config.train_config.random_seed)
+    
     allow_tf32(pipeline_config.train_config, backend)
 
     data_config = pipeline_config.data_config

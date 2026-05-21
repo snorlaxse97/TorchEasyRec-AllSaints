@@ -65,7 +65,7 @@ def parse_requirements(fname="requirements.txt"):
 
 
 setup(
-    name="tzrec_allsaints_custom_ple_v2",
+    name="tzrec_allsaints_custom_ple_uwl_seed",
     version=get_version(),
     description="An easy-to-use framework for Recommendation",
     long_description=readme(),

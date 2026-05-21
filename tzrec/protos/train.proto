@@ -37,5 +37,7 @@ message TrainConfig {
     optional bool cuda_matmul_allow_tf32 = 14 [default = false];
     // global embedding param constraints
     optional ParameterConstraints global_embedding_constraints = 15;
+    // random seed for reproducibility, if not set, will use random seed
+    optional uint32 random_seed = 16;
     // TBD: qcomm config
 }
